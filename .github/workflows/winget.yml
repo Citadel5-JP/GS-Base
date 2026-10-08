@@ -31,4 +31,4 @@ jobs:
           $overrideUrl = "${installerUrl}|x64"
           
           # 4. Push the update cleanly straight to Microsoft
-          wingetcreate update Citadel5-JP.GS-Base -s -v $cleanVersion -u $overrideUrl
+          wingetcreate update Citadel5-JP.GS-Base -s -v $cleanVersion -u $overrideUrl --display-version "$cleanVersion - Limited Trial Version"
