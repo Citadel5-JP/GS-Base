@@ -1,0 +1,34 @@
+name: Publish release to WinGet
+
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install WinGetCreate Tool
+        run: winget install Microsoft.WingetCreate --silent --disable-interactivity --accept-source-agreements --accept-package-agreements
+
+      - name: Submit Package Update to Microsoft
+        env:
+          WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_ACC_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          # 1. Use the 'gh' tool to fetch the absolute latest version tag directly from your repository
+          $cleanVersion = gh release view --json tagName --jq '.tagName'
+          
+          # 2. Extract the direct link for your uploaded .exe file from that specific latest release
+          $installerUrl = gh release view $cleanVersion --json assets --jq '.assets[] | select(.name | endswith(".exe")) | .url'
+          
+          # 3. Create the direct pipe configuration string safely
+          $overrideUrl = "${installerUrl}|x64"
+          
+          # 4. Push the update cleanly straight to Microsoft
+          wingetcreate update Citadel5-JP.GS-Base -s -v $cleanVersion -u $overrideUrl
