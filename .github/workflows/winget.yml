@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install WinGetCreate Tool
         run: winget install Microsoft.WingetCreate --silent --disable-interactivity --accept-source-agreements --accept-package-agreements
